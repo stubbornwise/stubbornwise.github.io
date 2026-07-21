@@ -1,116 +1,852 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Contagem Regressiva - 17 de Julho</title>
-  <style>
-    body {
-      background: #111;
-      color: #fff;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-      padding: 20px;
-      text-align: center;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo Unificado e Exaustivo do Meu INSS</title>
+    <style>
+        :root {
+            --primary: #0f172a;
+            --secondary: #1e3a8a;
+            --accent-blue: #2563eb;
+            --accent-red: #dc2626;
+            --accent-amber: #d97706;
+            --accent-green: #16a34a;
+            --accent-indigo: #4f46e5;
+            --accent-teal: #0d9488;
+            --accent-rose: #e11d48;
+            --accent-purple: #9333ea;
+            --accent-cyan: #0891b2;
+            --bg-body: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
 
-    h1 {
-      margin-bottom: 30px;
-      font-size: 5vw;
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    .countdown {
-      display: flex;
-      gap: 15px;
-      flex-wrap: wrap;
-      justify-content: center;
-      font-size: 6vw;
-    }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            padding: 24px 16px;
+            line-height: 1.5;
+        }
 
-    .countdown div {
-      min-width: 60px;
-    }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
 
-    .label {
-      font-size: 0.5em;
-      color: #aaa;
-      margin-top: 4px;
-    }
+        /* Header Banner */
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: #ffffff;
+            padding: 32px 24px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.15);
+        }
 
-    @media (min-width: 768px) {
-      h1 {
-        font-size: 2.5em;
-      }
+        header h1 {
+            font-size: clamp(1.5rem, 4vw, 2.2rem);
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
 
-      .countdown {
-        font-size: 2em;
-        gap: 30px;
-      }
-    }
-  </style>
+        header p {
+            color: #93c5fd;
+            font-size: clamp(0.9rem, 2vw, 1.05rem);
+            max-width: 900px;
+        }
+
+        .tag-year {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 12px;
+            color: #e0f2fe;
+        }
+
+        /* Campo de Pesquisa Interativo */
+        .search-container {
+            margin-bottom: 32px;
+            position: sticky;
+            top: 16px;
+            z-index: 100;
+        }
+
+        .search-box {
+            position: relative;
+            width: 100%;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            border-radius: 12px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 16px 20px 16px 48px;
+            font-size: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            background-color: #ffffff;
+            color: var(--text-main);
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            fill: var(--text-muted);
+            pointer-events: none;
+        }
+
+        .no-results {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-top: 20px;
+        }
+
+        /* Categorias */
+        .category-section {
+            margin-bottom: 40px;
+        }
+
+        .category-header {
+            border-left: 4px solid var(--accent-blue);
+            padding-left: 14px;
+            margin-bottom: 20px;
+        }
+
+        .category-header.incapacidade-type { border-left-color: var(--accent-green); }
+        .category-header.aposentadoria-type { border-left-color: var(--accent-blue); }
+        .category-header.maternidade-type { border-left-color: var(--accent-rose); }
+        .category-header.pensao-type { border-left-color: var(--accent-red); }
+        .category-header.bpc-type { border-left-color: var(--accent-purple); }
+        .category-header.especial-type { border-left-color: var(--accent-amber); }
+        .category-header.servicos-type { border-left-color: var(--accent-indigo); }
+        .category-header.cnis-type { border-left-color: var(--accent-cyan); }
+        .category-header.extratos-type { border-left-color: var(--accent-teal); }
+        .category-header.gov-type { border-left-color: var(--accent-amber); }
+
+        .category-header h2 {
+            font-size: 1.3rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .category-header p {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+        }
+
+        /* Layout Grid Altamente Responsivo */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            align-items: stretch;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            height: 100%;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.06);
+            border-color: #cbd5e1;
+        }
+
+        .card.hidden {
+            display: none !important;
+        }
+
+        .card-header {
+            margin-bottom: 12px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+
+        .badge-blue { background-color: #dbeafe; color: #1e40af; }
+        .badge-green { background-color: #dcfce7; color: #166534; }
+        .badge-purple { background-color: #f3e8ff; color: #6b21a8; }
+        .badge-red { background-color: #fee2e2; color: #991b1b; }
+        .badge-amber { background-color: #fef3c7; color: #92400e; }
+        .badge-indigo { background-color: #e0e7ff; color: #3730a3; }
+        .badge-teal { background-color: #ccfbf1; color: #115e59; }
+        .badge-rose { background-color: #ffe4e6; color: #9f1239; }
+        .badge-cyan { background-color: #cffafe; color: #155e75; }
+
+        .card-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--primary);
+            line-height: 1.35;
+        }
+
+        .card-body {
+            font-size: 0.88rem;
+            color: #475569;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .req-label {
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 4px;
+        }
+
+        .card-body p {
+            line-height: 1.5;
+        }
+
+        footer {
+            text-align: center;
+            padding: 24px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border-color);
+            margin-top: 40px;
+        }
+
+        /* Ajustes específicos para telas mobile pequenas */
+        @media (max-width: 480px) {
+            body {
+                padding: 12px 8px;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                padding: 24px 16px;
+            }
+        }
+    </style>
 </head>
 <body>
 
-  <h1>Contagem Regressiva para 17 de Julho de 2025</h1>
+    <div class="container">
+        
+        <header>
+            <h1>Catálogo Exaustivo de Serviços e Benefícios - Meu INSS</h1>
+            <p>Lista completa de requerimentos, benefícios, consultas de CNIS, extratos, revisões, acertos cadastrais e gestão de acesso à conta gov.br.</p>
+            <span class="tag-year">Portal do Meu INSS - Mapeamento Completo</span>
+        </header>
 
-  <div class="countdown">
-    <div>
-      <span id="dias">--</span>
-      <div class="label">dias</div>
+        <!-- Barra de Pesquisa Interativa -->
+        <div class="search-container">
+            <div class="search-box">
+                <svg class="search-icon" viewBox="0 0 24 24">
+                    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                </svg>
+                <input type="text" id="searchInput" class="search-input" placeholder="Digite para buscar qualquer serviço (Ex: Senha Provisória, CNIS, Atestmed, CTC...)" onkeyup="filterCards()">
+            </div>
+        </div>
+
+        <div id="noResults" class="no-results">
+            🔍 Nenhum benefício ou serviço correspondente foi encontrado.
+        </div>
+
+        <!-- SEÇÃO 1: INCAPACIDADE E SAÚDE -->
+        <section class="category-section">
+            <div class="category-header incapacidade-type">
+                <h2>1. Benefícios por Incapacidade, Saúde e Perícias</h2>
+                <p>Pedidos de auxílio-doença, perícias médicas, reabilitação profissional e adicionais</p>
+            </div>
+            <div class="cards-grid">
+                
+                <div class="card">
+                    <div class="card-header">
+                        <span class="badge badge-green">ESPÉCIE B31</span>
+                        <h3 class="card-title">Benefício por Incapacidade Temporária (Auxílio-Doença Comum)</h3>
+                    </div>
+                    <div class="card-body">
+                        <span class="req-label">Incapacidade Temporária</span>
+                        <p>Afastamentos por doenças gerais ou acidentes comuns sem vínculo de trabalho. Exige 12 contribuições (salvo exceções).</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="badge badge-green">ESPÉCIE B91</span>
+                        <h3 class="card-title">Benefício por Incapacidade Temporária Acidentária</h3>
+                    </div>
+                    <div class="card-body">
+                        <span class="req-label">Acidente de Trabalho</span>
+                        <p>Para acidentes de trabalho, percurso ou doença ocupacional. Isento de carência, com estabilidade de 12 meses e FGTS.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="badge badge-green">ATESTMED</span>
+                        <h3 class="card-title">Pedir Benefício por Incapacidade Temporária (Análise Documental)</h3>
+                    </div>
+                    <div class="card-body">
+                        <span class="req-label">Serviço Online</span>
+                        <p>Envio de laudo ou atestado médico sem necessidade de deslocamento ou perícia presencial para concessão rápida.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="badge badge-green">PERÍCIA PRESENCIAL</span>
+                        <h3 class="card-title">Agendar Perícia Médica (Inicial, Prorrogação e Reagendamento)</h3>
+                    </div>
+                    <div class="card-body">
+                        <span class="req-label">Atendimento Presencial</span>
+                        <p>Marcação para avaliação física, pedido de prorrogação do benefício atual ou remarcação por não comparecimento.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="badge badge-green">ESPÉCIE B32 / B92</span>
+                        <h3 class="card-title">Aposentadoria por Incapacidade Permanente (Invalidez)</h3>
+                    </div>
+                    <div class="card-body">
+                        <span class="req-label">Incapacidade Total</span>
+                        <p>Concedida após avaliação pericial constatando incapacidade definitiva e sem reabilitação profissional.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="badge badge-green">ADICIONAL DE 25%</span>
+                        <h3 class="card-title">Solicitar Adicional de 25% na Aposentadoria por Invalidez</h3>
+                    </div>
+                    <div class="card-body">
+                        <span class="req-label">Acompanhante Permanente</span>
+                        <p>Aumento da renda para o aposentado por invalidez que comprove necessidade de assistência diária contínua.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="badge badge-green">ESPÉCIE B36</span>
+                        <h3 class="card-title">Auxílio-Acidente</h3>
+                    </div>
+                    <div class="card-body">
+                        <span class="req-label">Indenização por Sequela</span>
+                        <p>Benefício indenizatório em virtude de sequela permanente que reduz a capacidade de trabalho (não impede de trabalhar).</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="badge badge-green">REABILITAÇÃO</span>
+                        <h3 class="card-title">Solicitar Reabilitação Profissional</h3>
+                    </div>
+                    <div class="card-body">
+                        <span class="req-label">Readaptação no Mercado</span>
+                        <p>Serviço multiprofissional para readequar o segurado incapaz a uma nova função ou atividade compatível.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SEÇÃO 2: APOSENTADORIAS -->
+        <section class="category-section">
+            <div class="category-header aposentadoria-type">
+                <h2>2. Todas as Modalidades de Aposentadoria</h2>
+                <p>Regras gerais, transições, atividades rurais, especiais e aposentadoria PCD</p>
+            </div>
+            <div class="cards-grid">
+                
+                <div class="card">
+                    <div class="card-header">
+                        <span class="badge badge-blue">ESPÉCIE B41</span>
+                        <h3 class="card-title">Aposentadoria por Idade Urbana</h3>
+                    </div>
+                    <div class="card-body">
+                        <span class="req-label">Regra Geral</span>
+                        <p>Mulheres aos 62 anos / Homens aos 65 anos, com carência mínima de 15 anos de contribuição.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="badge badge-blue">ESPÉCIE B08</span>
+                        <h3 class="card-title">Aposentadoria por Idade Rural</h3>
+                    </div>
+                    <div class="card-body">
+                        <span class="req-label">Segurado Especial</span>
+                        <p>Mulheres aos 55 anos / Homens aos 60 anos, com comprovação de 15 anos de atividade no campo.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="badge badge-blue">REGRAS DE TRANSIÇÃO</span>
+                        <h3 class="card-title">Aposentadoria por Tempo de Contribuição (B42)</h3>
+                    </div>
+                    <div class="card-body">
+                        <span class="req-label">Regras do Art. 15 ao 21</span>
+                        <p>Requerimento pelas regras de Pontos, Idade Progressiva, Pedágio de 50% e Pedágio de 100%.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="badge badge-blue">ESPÉCIE B46</span>
+                        <h3 class="card-title">Aposentadoria Especial</h3>
+                    </div>
+                    <div class="card-body">
+                        <span class="req-label">Insalubridade / Periculosidade</span>
+                        <p>Para trabalhadores expostos a agentes nocivos (15, 20 ou 25 anos) comprovados mediante Perfil Profissiográfico Previdenciário (PPP).</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="badge badge-blue">ESPÉCIE B85 / B86</span>
+                        <h3 class="card-title">Aposentadoria da Pessoa com Deficiência (Por Idade e Tempo)</h3>
+                    </div>
+                    <div class="card-body">
+                        <span class="req-label">Lei Complementar 142</span>
+                        <p>Redução nos requisitos de idade ou tempo de contribuição após perícia médica e avaliação social.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="badge badge-blue">APOSENTADORIA HÍBRIDA</span>
+                        <h3 class="card-title">Aposentadoria por Idade Híbrida</h3>
+                    </div>
+                    <div class="card-body">
+                        <span class="req-label">Rural + Urbano</span>
+                        <p>Permite somar o tempo de trabalho rural não pago com o período urbano para atingir a carência.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="badge badge-blue">SIMULADOR</span>
+                        <h3 class="card-title">Simular Aposentadoria</h3>
+                    </div>
+                    <div class="card-body">
+                        <span class="req-label">Ferramenta Automática</span>
+                        <p>Calcula em tempo real a idade, tempo de contribuição e quanto falta para atingir cada regra de aposentadoria.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SEÇÃO 3: SALÁRIO-MATERNIDADE -->
+        <section class="category-section">
+            <div class="category-header maternidade-type">
+                <h2>3. Salário-Maternidade e Proteção à Família</h2>
+                <p>Proteção financeira nos casos de parto, adoção ou guarda judicial</p>
+            </div>
+            <div class="cards-grid">
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="badge badge-rose">ESPÉCIE B80</span>
+                        <h3 class="card-title">Salário-Maternidade Urbano</h3>
+                    </div>
+                    <div class="card-body">
+                        <span class="req-label">Empregada, Individual, Facultativa</span>
+                        <p>Pago durante o afastamento por parto, aborto não criminoso ou adoção de crianças.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="badge badge-rose">ESPÉCIE B80 RURAL</span>
+                        <h3 class="card-title">Salário-Maternidade Rural</h3>
+                    </div>
+                    <div class="card-body">
+                        <span class="req-label">Segurada Especial Rural</span>
+                        <p>Para trabalhadoras rurais comprovando a atividade no campo nos 10 meses anteriores ao parto.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SEÇÃO 4: PENSÕES E AUXÍLIOS AOS DEPENDENTES -->
+        <section class="category-section">
+            <div class="category-header pensao-type">
+                <h2>4. Pensões por Morte e Benefícios para Dependentes</h2>
+                <p>Proteção financeira aos familiares do segurado falecido ou recluso</p>
+            </div>
+            <div class="cards-grid">
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="badge badge-red">ESPÉCIE B21</span>
+                        <h3 class="card-title">Pensão por Morte Urbana</h3>
+                    </div>
+                    <div class="card-body">
+                        <span class="req-label">Dependentes Urbanos</span>
+                        <p>Concedida aos dependentes de segurado falecido que mantinha qualidade ou recebia benefício.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="badge badge-red">ESPÉCIE B21 RURAL</span>
+                        <h3 class="card-title">Pensão por Morte Rural</h3>
+                    </div>
+                    <div class="card-body">
+                        <span class="req-label">Dependentes Rurais</span>
+                        <p>Para dependentes do trabalhador rural com comprovação do exercício da atividade no campo.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="badge badge-red">ESPÉCIE B25</span>
+                        <h3 class="card-title">Auxílio-Reclusão</h3>
+                    </div>
+                    <div class="card-body">
+                        <span class="req-label">Dependentes de Preso em Regime Fechado</span>
+                        <p>Pago aos dependentes de segurado de baixa renda recolhido à prisão sob regime fechado.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SEÇÃO 5: BENEFÍCIOS ASSISTENCIAIS (BPC/LOAS) -->
+        <section class="category-section">
+            <div class="category-header bpc-type">
+                <h2>5. Benefícios Assistenciais (BPC / LOAS)</h2>
+                <p>Proteção social para idosos e pessoas com deficiência em vulnerabilidade econômica</p>
+            </div>
+            <div class="cards-grid">
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="badge badge-purple">ESPÉCIE B88</span>
+                        <h3 class="card-title">BPC / LOAS - Idoso (65 Anos ou Mais)</h3>
+                    </div>
+                    <div class="card-body">
+                        <span class="req-label">Lei Orgânica da Assistência Social</span>
+                        <p>Pago a idosos vulneráveis sem renda e com inscrição atualizada no CadÚnico do Governo Federal.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="badge badge-purple">ESPÉCIE B87</span>
+                        <h3 class="card-title">BPC / LOAS - Pessoa com Deficiência</h3>
+                    </div>
+                    <div class="card-body">
+                        <span class="req-label">Avaliação Médica e Social</span>
+                        <p>Para pessoas com impedimentos de longo prazo que comprovem baixa renda e estarem inscritas no CadÚnico.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SEÇÃO 6: ACERTOS CADASTRAIS E CNIS -->
+        <section class="category-section">
+            <div class="category-header cnis-type">
+                <h2>6. Gestão de Vida Laboral, CNIS e Acertos Cadastrais</h2>
+                <p>Atualizações de vínculos, acertos de vínculos e emissão de extrato CNIS</p>
+            </div>
+            <div class="cards-grid">
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="badge badge-cyan">CNIS</span>
+                        <h3 class="card-title">Extrato de Contribuição (CNIS)</h3>
+                    </div>
+                    <div class="card-body">
+                        <span class="req-label">Histórico Escritural Completo</span>
+                        <p>Emissão completa de todas as contribuições, vínculos empregatícios e remunerações registradas no INSS.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="badge badge-cyan">ACERTO CADASTRAL</span>
+                        <h3 class="card-title">Atualizar Vínculos e Remunerações (Acerto do CNIS)</h3>
+                    </div>
+                    <div class="card-body">
+                        <span class="req-label">Inclusão / Correção</span>
+                        <p>Inclusão de carteira de trabalho, alteração de salários ou acerto de períodos faltantes no extrato previdenciário.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="badge badge-cyan">CTC</span>
+                        <h3 class="card-title">Certidão de Tempo de Contribuição (CTC)</h3>
+                    </div>
+                    <div class="card-body">
+                        <span class="req-label">Servidor Público</span>
+                        <p>Certidão para averbação do tempo de trabalho prestado sob o regime geral (INSS) em órgãos públicos (RPPS).</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SEÇÃO 7: EXTRATOS, DECLARAÇÕES E IMPOSTO DE RENDA -->
+        <section class="category-section">
+            <div class="category-header extratos-type">
+                <h2>7. Extratos, Declarações e Comprovantes Oficiais</h2>
+                <p>Comprovante de rendimentos, declaração de benefício e informe de rendimentos IR</p>
+            </div>
+            <div class="cards-grid">
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="badge badge-teal">PAGAMENTOS</span>
+                        <h3 class="card-title">Extrato de Pagamento de Benefício (HISCRE)</h3>
+                    </div>
+                    <div class="card-body">
+                        <span class="req-label">Comprovante Financeiro</span>
+                        <p>Consulta detalhada dos valores pagos mensalmente, descontos e datas de depósito do seu benefício.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="badge badge-teal">IMPOSTO DE RENDA</span>
+                        <h3 class="card-title">Informe de Rendimentos para Imposto de Renda</h3>
+                    </div>
+                    <div class="card-body">
+                        <span class="req-label">Declaração Anual IR</span>
+                        <p>Documento oficial exigido pela Receita Federal constando o total de rendimentos pagos pelo INSS no ano anterior.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="badge badge-teal">DECLARAÇÃO</span>
+                        <h3 class="card-title">Declaração de Beneficiário do INSS</h3>
+                    </div>
+                    <div class="card-body">
+                        <span class="req-label">Nada Consta / Consta</span>
+                        <p>Emissão de comprovante atestando se a pessoa é ou não titular de algum benefício ativo no INSS.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SEÇÃO 8: SERVIÇOS ADMINISTRATIVOS, RECURSOS E REVISÕES -->
+        <section class="category-section">
+            <div class="category-header servicos-type">
+                <h2>8. Revisões, Recursos e Alterações Administrativas</h2>
+                <p>Contestações de análises, pedido de revisões e alteração de dados bancários</p>
+            </div>
+            <div class="cards-grid">
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="badge badge-indigo">CONTESTAÇÃO</span>
+                        <h3 class="card-title">Recurso Ordinário / Especial ao CRPS</h3>
+                    </div>
+                    <div class="card-body">
+                        <span class="req-label">Junta de Recursos</span>
+                        <p>Pedido de reavaliação de decisão indeferida pelo INSS enviada para o Conselho de Recursos da Previdência Social.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="badge badge-indigo">REVISÃO</span>
+                        <h3 class="card-title">Revisão de Benefício</h3>
+                    </div>
+                    <div class="card-body">
+                        <span class="req-label">Reanálise do Valor</span>
+                        <p>Solicitação para reavaliar o cálculo do benefício já concedido com inclusão de novas provas ou teses revisionais.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="badge badge-indigo">PAGAMENTO</span>
+                        <h3 class="card-title">Alterar Local ou Forma de Pagamento</h3>
+                    </div>
+                    <div class="card-body">
+                        <span class="req-label">Mudança de Agência ou Conta</span>
+                        <p>Transferência da agência pagadora do benefício para outra cidade ou alteração do recebimento para conta corrente.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SEÇÃO 9: ACORDOS INTERNACIONAIS -->
+        <section class="category-section">
+            <div class="category-header especial-type">
+                <h2>9. Acordos Internacionais de Previdência</h2>
+                <p>Aposentadorias e pensões para trabalhadores residentes no exterior ou com períodos trabalhados fora</p>
+            </div>
+            <div class="cards-grid">
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="badge badge-amber">EXTERIOR</span>
+                        <h3 class="card-title">Benefício Sob Tratado / Acordo Internacional</h3>
+                    </div>
+                    <div class="card-body">
+                        <span class="req-label">Trabalho no Exterior</span>
+                        <p>Aproveitamento de tempo de contribuição prestado em países que possuem acordo previdenciário com o Brasil.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SEÇÃO 10: ACESSO À CONTA GOV.BR E SENHA PROVISÓRIA -->
+        <section class="category-section">
+            <div class="category-header gov-type">
+                <h2>10. Acesso à Conta gov.br, Senha Provisória e Código de Acesso</h2>
+                <p>Gestão de credenciais de acesso, recuperação de senha de 24h e suporte de nível de conta</p>
+            </div>
+            <div class="cards-grid">
+                
+                <div class="card">
+                    <div class="card-header">
+                        <span class="badge badge-amber">SENHA PROVISÓRIA 24H</span>
+                        <h3 class="card-title">Cadastrar / Emitir Senha gov.br Provisória (Validade de 24 horas)</h3>
+                    </div>
+                    <div class="card-body">
+                        <span class="req-label">Atendimento Presencial ou Caixa/Bancos</span>
+                        <p>Geração de código/senha temporária presencialmente nas agências do INSS ou através dos caixas eletrônicos do Banco do Brasil e Caixa Econômica. A senha é válida por 24 horas e exige alteração imediata no primeiro login no gov.br.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="badge badge-amber">CÓDIGO DE ACESSO</span>
+                        <h3 class="card-title">Recuperar Código de Acesso / Redefinir Senha gov.br</h3>
+                    </div>
+                    <div class="card-body">
+                        <span class="req-label">Recuperação Digital</span>
+                        <p>Procedimento para redefinir a senha através do envio de código de validação via SMS, e-mail cadastrado ou reconhecimento facial pelo aplicativo gov.br.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="badge badge-amber">VALIDAÇÃO BANCÁRIA</span>
+                        <h3 class="card-title">Recuperação de Senha via Validação de Dados Bancários</h3>
+                    </div>
+                    <div class="card-body">
+                        <span class="req-label">Nível Prata</span>
+                        <p>Recuperação do acesso à conta realizando login com a senha do banco credenciado (BB, Caixa, Bradesco, Itaú, Santander, Sindicred, Banrisul), elevando automaticamente a conta para o Nível Prata.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="badge badge-amber">AUMENTAR NÍVEL</span>
+                        <h3 class="card-title">Aumentar Nível da Conta gov.br (Bronze para Prata / Ouro)</h3>
+                    </div>
+                    <div class="card-body">
+                        <span class="req-label">Acesso Total aos Serviços</span>
+                        <p>Orientação e validação biométrica (TSE/CNH) para subir a conta do nível Bronze ao nível Prata ou Ouro, necessário para realizar agendamentos, assinar documentos e solicitar benefícios complexos.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <footer>
+            <p>Portal Unificado de Referência Completa do Meu INSS - Todos os Direitos Reservados</p>
+        </footer>
+
     </div>
-    <div>
-      <span id="horas">--</span>
-      <div class="label">horas</div>
-    </div>
-    <div>
-      <span id="minutos">--</span>
-      <div class="label">minutos</div>
-    </div>
-    <div>
-      <span id="segundos">--</span>
-      <div class="label">segundos</div>
-    </div>
-  </div>
 
-  <script>
-    const diasEl = document.getElementById("dias");
-    const horasEl = document.getElementById("horas");
-    const minutosEl = document.getElementById("minutos");
-    const segundosEl = document.getElementById("segundos");
+    <!-- Script do Filtro de Pesquisa em Tempo Real -->
+    <script>
+        function filterCards() {
+            const input = document.getElementById('searchInput').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.card');
+            const sections = document.querySelectorAll('.category-section');
+            const noResults = document.getElementById('noResults');
+            let totalVisible = 0;
 
-    const dataAlvo = new Date("2025-07-17T00:00:00").getTime();
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                if (text.includes(input)) {
+                    card.classList.remove('hidden');
+                    totalVisible++;
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
 
-    function atualizarContagem() {
-      const agora = new Date().getTime();
-      const diferenca = dataAlvo - agora;
+            sections.forEach(section => {
+                const visibleCards = section.querySelectorAll('.card:not(.hidden)');
+                if (visibleCards.length === 0) {
+                    section.style.display = 'none';
+                } else {
+                    section.style.display = 'block';
+                }
+            });
 
-      if (diferenca <= 0) {
-        diasEl.innerText = "0";
-        horasEl.innerText = "0";
-        minutosEl.innerText = "0";
-        segundosEl.innerText = "0";
-        return;
-      }
-
-      const segundos = Math.floor((diferenca / 1000) % 60);
-      const minutos = Math.floor((diferenca / 1000 / 60) % 60);
-      const horas = Math.floor((diferenca / (1000 * 60 * 60)) % 24);
-      const dias = Math.floor(diferenca / (1000 * 60 * 60 * 24));
-
-      diasEl.innerText = dias;
-      horasEl.innerText = horas;
-      minutosEl.innerText = minutos;
-      segundosEl.innerText = segundos;
-    }
-
-    atualizarContagem();
-    setInterval(atualizarContagem, 1000);
-  </script>
+            if (totalVisible === 0) {
+                noResults.style.display = 'block';
+            } else {
+                noResults.style.display = 'none';
+            }
+        }
+    </script>
 
 </body>
 </html>
